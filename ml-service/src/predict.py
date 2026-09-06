@@ -36,11 +36,15 @@ def predict_risk(checkin_history: Iterable[Mapping], model_dir: str | Path | Non
     urgent_probability = float(urgent["model"].predict_proba(row)[0, 1])
     threshold = float(urgent["threshold"])
     score = calculate_dynamic_score(urgent_probability, features)
+    urgent_escalation = urgent_probability >= threshold
+    if urgent_escalation:
+        score["risk_tier"] = "URGENT"
     trend = "worsening" if features["distress_delta"] > 0.5 or features["worsening_checkins"] > 0 else "stable/improving"
     risk_factors = [name for name, value in (("emotional distress", features["emotional_distress_latest"]), ("worsening trend", features["distress_delta"]), ("sleep disruption", 10 - features["sleep_quality_latest"]), ("safety signal", features["self_harm_indicator_latest"] + features["threat_reported_latest"]), ("negative sentiment", features["negative_sentiment"])) if value > 0.5]
     protective = [name for name, value in (("social support", features["social_support_latest"]), ("coping ability", features["coping_ability_latest"])) if value >= 7]
     return {
-        "risk_level": score["risk_tier"] if score["risk_tier"] == "URGENT" else predicted_label,
+        "risk_level": score["risk_tier"],
+        "ml_risk_level": predicted_label,
         "class_probabilities": {str(label): round(float(probability), 6)
                                for label, probability in zip(risk["classes"], probabilities)},
         "urgent_probability": round(urgent_probability, 6),
@@ -48,7 +52,7 @@ def predict_risk(checkin_history: Iterable[Mapping], model_dir: str | Path | Non
         "trend": trend,
         "top_risk_factors": risk_factors[:5],
         "protective_factors": protective,
-        "human_review_required": bool(urgent_probability >= threshold or score["risk_tier"] in {"HIGH", "URGENT"}),
+        "human_review_required": bool(urgent_escalation or score["risk_tier"] in {"HIGH", "URGENT"}),
         "dynamic_score": score,
         "model_version": metadata["model_version"],
         "disclaimer": "Synthetic demonstration only; not a diagnosis or clinical recommendation.",
