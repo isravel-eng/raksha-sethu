@@ -13,9 +13,22 @@ import interventionRoutes from './routes/interventions.js';
 
 export const app = express();
 
+// The prototype uses bearer tokens rather than browser cookies, so credentials
+// are not required. Reflecting the caller's Origin avoids deployment failures
+// when a preview/custom Vercel domain is used.
 app.use(cors({
-  origin: config.corsOrigins,
-  credentials: true,
+  origin: (origin, callback) => {
+    if (!origin || config.corsOrigins.includes(origin) || config.nodeEnv !== 'production') {
+      return callback(null, true);
+    }
+    // Keep the prototype usable with Vercel/Render preview URLs while still
+    // preserving an explicit allow-list for production configuration.
+    if (/^https:\/\/[a-z0-9-]+\.vercel\.app$/i.test(origin)) {
+      return callback(null, true);
+    }
+    return callback(new Error(`Origin not allowed by CORS: ${origin}`));
+  },
+  credentials: false,
 }));
 app.use(express.json({ limit: '1mb' }));
 
