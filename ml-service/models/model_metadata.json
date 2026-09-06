@@ -1,0 +1,52 @@
+{
+  "seed": 20260906,
+  "model_version": "synthetic-risk-v1",
+  "feature_names": [
+    "emotional_distress_latest",
+    "distress_frequency_latest",
+    "overwhelm_latest",
+    "sleep_quality_latest",
+    "fatigue_latest",
+    "social_support_latest",
+    "coping_ability_latest",
+    "self_harm_indicator_latest",
+    "days_until_hearing_latest",
+    "hearing_postponed_latest",
+    "postponement_days_latest",
+    "threat_reported_latest",
+    "protection_needed_latest",
+    "relief_pending_latest",
+    "legal_aid_pending_latest",
+    "case_stage_score",
+    "previous_distress",
+    "distress_delta",
+    "sleep_delta",
+    "rolling_distress_mean",
+    "rolling_distress_max",
+    "worsening_checkins",
+    "trend_slope",
+    "checkin_count",
+    "sentiment_score",
+    "negative_sentiment",
+    "crisis_keyword_flag"
+  ],
+  "risk_classes": [
+    "HIGH",
+    "LOW",
+    "MEDIUM",
+    "URGENT"
+  ],
+  "urgent_threshold": 0.13,
+  "dataset_sizes": {
+    "citizens": 500,
+    "checkins": 4067
+  },
+  "split_sizes": {
+    "train": 300,
+    "validation": 100,
+    "test": 100
+  },
+  "split_strategy": "citizen-level stratified train/validation/test (60/20/20)",
+  "data_source": "synthetic only; no clinical labels",
+  "intended_use": "transparent support-priority demonstration, not diagnosis or clinical decision-making"
+}
