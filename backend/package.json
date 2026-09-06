@@ -1,0 +1,22 @@
+{
+  "name": "raksha-setu-backend",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "description": "RakshaSetu Node/Express API: auth, cases, check-ins, and FastAPI ML integration.",
+  "scripts": {
+    "start": "node src/index.js",
+    "db:setup": "node src/db/setup.js",
+    "db:local": "node src/db/local-postgres.js",
+    "smoke": "node src/scripts/smoke-test.js"
+  },
+  "dependencies": {
+    "bcrypt": "^5.1.1",
+    "cors": "^2.8.5",
+    "dotenv": "^16.4.7",
+    "embedded-postgres": "^17.6.0-beta.15",
+    "express": "^4.21.2",
+    "jsonwebtoken": "^9.0.2",
+    "pg": "^8.13.1"
+  }
+}
