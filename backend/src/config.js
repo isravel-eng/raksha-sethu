@@ -1,8 +1,20 @@
 import 'dotenv/config';
 
-const DEFAULT_FRONTEND_ORIGIN = 'https://raksha-setu-five.vercel.app';
-const DEFAULT_LOCAL_ORIGIN = 'http://localhost:5173';
-const DEFAULT_ML_SERVICE = 'https://raksha-sethu-ml.onrender.com';
+const productionFrontendOrigins = [
+  'https://raksha-setu-five.vercel.app',
+  'https://raksha-setu-frontend.onrender.com',
+];
+
+const configuredCorsOrigins = (process.env.CORS_ORIGIN || '')
+  .split(',')
+  .map((origin) => origin.trim())
+  .filter(Boolean);
+
+const defaultCorsOrigins = [
+  'http://localhost:5173',
+  'http://localhost:3000',
+  ...productionFrontendOrigins,
+];
 
 export const config = {
   port: Number(process.env.PORT || 4000),
@@ -10,12 +22,9 @@ export const config = {
   databaseUrl: process.env.DATABASE_URL,
   jwtSecret: process.env.JWT_SECRET,
   jwtExpiresIn: process.env.JWT_EXPIRES_IN || '8h',
-  mlServiceUrl: (process.env.ML_SERVICE_URL || DEFAULT_ML_SERVICE).replace(/\/$/, ''),
+  mlServiceUrl: (process.env.ML_SERVICE_URL || 'https://raksha-sethu-ml.onrender.com').replace(/\/$/, ''),
   mlTimeoutMs: Number(process.env.ML_TIMEOUT_MS || 10000),
-  corsOrigins: (process.env.CORS_ORIGIN || `${DEFAULT_FRONTEND_ORIGIN},${DEFAULT_LOCAL_ORIGIN}`)
-    .split(',')
-    .map((origin) => origin.trim())
-    .filter(Boolean),
+  corsOrigins: [...new Set([...defaultCorsOrigins, ...configuredCorsOrigins])],
 };
 
 export const ROLES = [
