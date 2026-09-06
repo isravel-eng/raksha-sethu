@@ -1,14 +1,22 @@
 import 'dotenv/config';
 import { app } from './app.js';
 import { config } from './config.js';
-import { pool } from './db.js';
+import { initializeDatabase, pool } from './db.js';
 
 if (!config.jwtSecret || config.jwtSecret === 'replace-with-a-long-random-secret') {
   console.warn('Warning: set JWT_SECRET in backend/.env before using authentication.');
 }
 
-const server = app.listen(config.port, () => {
-  console.log(`RakshaSetu API listening on http://127.0.0.1:${config.port}`);
+try {
+  await initializeDatabase();
+  console.log('RakshaSetu PostgreSQL schema is ready.');
+} catch (error) {
+  console.error('Database initialization failed:', error);
+  process.exit(1);
+}
+
+const server = app.listen(config.port, '0.0.0.0', () => {
+  console.log(`RakshaSetu API listening on port ${config.port}`);
 });
 
 async function shutdown() {
