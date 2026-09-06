@@ -19,3 +19,16 @@ clinically validated.
 probabilities, urgent probability, confidence, trend, risk/protective factors,
 dynamic score, and whether a human counsellor review is required. It is a
 prototype for review prioritisation, not diagnosis or automated intervention.
+
+## API
+
+Install the dependencies and start the API from `ml-service`:
+
+```text
+pip install -r requirements.txt
+uvicorn app.main:app --reload
+```
+
+Use `GET /health` to verify model artifacts are loaded. Send chronological
+check-ins to `POST /predict` as `{"checkin_history": [...]}`. The endpoint
+returns the existing `predict_risk()` result unchanged.

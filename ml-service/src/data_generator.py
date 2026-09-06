@@ -34,9 +34,25 @@ def generate_dataset(output: str | Path, n_citizens: int = 500, seed: int = SEED
                 "protection_needed": int(threat and rng.random() < .7), "relief_pending": int(stage == "RELIEF" and rng.random() < .7),
                 "legal_aid_pending": int(rng.random() < .25)})
         last = history[-1]; nlp = analyze_text(last["message_text"]); d = last["emotional_distress"] - history[-2]["emotional_distress"]
-        score = 0.38*last["emotional_distress"] + .16*last["overwhelm"] + .14*(10-last["sleep_quality"]) + .10*last["fatigue"] + .08*max(0,d) + .08*last["threat_reported"]*10 + .06*nlp["negative_sentiment"]*10 + .12*last["self_harm_indicator"]*10
-        score += rng.normal(0, 1.6)
-        label = "URGENT" if last["self_harm_indicator"] or score >= 7.5 else "HIGH" if score >= 5.4 else "MEDIUM" if score >= 3.4 else "LOW"
+        # Labels use only observable features and retain adjacent-class overlap.
+        score = (
+            0.30 * last["emotional_distress"]
+            + 0.18 * last["overwhelm"]
+            + 0.14 * (10 - last["sleep_quality"])
+            + 0.12 * last["fatigue"]
+            + 0.08 * (10 - last["social_support"])
+            + 0.06 * (10 - last["coping_ability"])
+            + 0.06 * max(0, d)
+            + 0.04 * last["threat_reported"] * 10
+            + 0.02 * nlp["negative_sentiment"] * 10
+        )
+        score += rng.normal(0, 0.75)
+        label = (
+            "URGENT" if last["self_harm_indicator"] or score >= 8.0
+            else "HIGH" if score >= 6.0
+            else "MEDIUM" if score >= 3.0
+            else "LOW"
+        )
         for i, record in enumerate(history, 1):
             nlp = analyze_text(record["message_text"])
             rows.append({"citizen_id": f"C{number+1:04d}", "checkin_id": f"C{number+1:04d}-{i:02d}", **record, **nlp, "risk_level": label})
