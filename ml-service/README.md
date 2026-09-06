@@ -32,3 +32,12 @@ uvicorn app.main:app --reload
 Use `GET /health` to verify model artifacts are loaded. Send chronological
 check-ins to `POST /predict` as `{"checkin_history": [...]}`. The endpoint
 returns the existing `predict_risk()` result unchanged.
+
+Example:
+
+```text
+curl http://localhost:8000/health
+curl -X POST http://localhost:8000/predict \
+  -H "Content-Type: application/json" \
+  -d "{\"checkin_history\":[{\"timestamp\":\"2024-01-01T00:00:00\",\"message_text\":\"I feel supported.\",\"case_stage\":\"FIR\"}]}"
+```
