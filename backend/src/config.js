@@ -24,6 +24,16 @@ export const config = {
   jwtExpiresIn: process.env.JWT_EXPIRES_IN || '8h',
   mlServiceUrl: (process.env.ML_SERVICE_URL || 'https://raksha-sethu-ml.onrender.com').replace(/\/$/, ''),
   mlTimeoutMs: Number(process.env.ML_TIMEOUT_MS || 10000),
+  // OpenAI is used ONLY for the conversational assessment and structured
+  // signal extraction. It never computes the stress score — the ML service
+  // remains the authoritative risk predictor.
+  openaiApiKey: process.env.OPENAI_API_KEY,
+  openaiModel: process.env.OPENAI_MODEL || 'gpt-4o-mini',
+  openaiTimeoutMs: Number(process.env.OPENAI_TIMEOUT_MS || 20000),
+  // Minimum absolute dynamic-score increase that triggers a counsellor alert
+  // during continuous NHAA monitoring (in addition to human_review_required
+  // and risk-tier escalation).
+  mlEscalationDelta: Number(process.env.ML_ESCALATION_DELTA || 8),
   corsOrigins: [...new Set([...defaultCorsOrigins, ...configuredCorsOrigins])],
 };
 
